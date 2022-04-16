@@ -14,9 +14,13 @@ class BooksViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = self.request.data
-        book_obj = Books.objects.create(book_title=data.get('book_title'),
-                                        book_author=data.get('book_author'))
-        book_obj.save()
+        try:
+            book_obj = Books.objects.create(book_title=data.get('book_title'),
+                                            book_author=data.get('book_author'))
+            book_obj.save()
+        except Exception as e:
+            content = {'Error': str(e)}
+            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
